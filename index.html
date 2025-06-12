@@ -73,6 +73,8 @@
 <body>
   <header>
     <h1>My Video Platform</h1>
+    <button onclick="logout()">Logout</button>
+
   </header>
 
   <div class="hero">
@@ -90,5 +92,36 @@
   <footer>
     &copy; 2025 My Video Platform. All rights reserved.
   </footer>
+  <!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCOu3t1rOBOnQJb4RTggIk8iF4BkmVitsE",
+    authDomain: "paidvideos-9e929.firebaseapp.com",
+    projectId: "paidvideos-9e929",
+    storageBucket: "paidvideos-9e929.firebasestorage.app",
+    messagingSenderId: "319365089060",
+    appId: "1:319365089060:web:74cef70497a499ab9615b1",
+    measurementId: "G-HFYKHT5VM1"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  auth.onAuthStateChanged(user => {
+    if (!user) {
+      window.location.href = "login.html";
+    }
+  });
+</script>
+  function logout() {
+    auth.signOut().then(() => {
+      window.location.href = "login.html";
+    });
+  }
+</script>
+
 </body>
 </html>
