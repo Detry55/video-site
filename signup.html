@@ -59,45 +59,49 @@
   </div>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCOu3t1rOBOnQJb4RTggIk8iF4BkmVitsE",
-      authDomain: "paidvideos-9e929.firebaseapp.com",
-      projectId: "paidvideos-9e929",
-      storageBucket: "paidvideos-9e929.firebasestorage.app",
-      messagingSenderId: "319365089060",
-      appId: "1:319365089060:web:74cef70497a499ab9615b1",
-      measurementId: "G-HFYKHT5VM1"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyCOu3t1rOBOnQJb4RTggIk8iF4BkmVitsE",
+    authDomain: "paidvideos-9e929.firebaseapp.com",
+    projectId: "paidvideos-9e929",
+    storageBucket: "paidvideos-9e929.firebasestorage.app",
+    messagingSenderId: "319365089060",
+    appId: "1:319365089060:web:74cef70497a499ab9615b1",
+    measurementId: "G-HFYKHT5VM1"
+  };
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
-    function signup() {
-      const name = document.getElementById('name').value;
-      const username = document.getElementById('username').value;
-      const email = document.getElementById('email').value;
-      const phone = document.getElementById('phone').value;
-      const password = document.getElementById('password').value;
+  function signup() {
+    const name = document.getElementById('name').value;
+    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+    const password = document.getElementById('password').value;
 
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          const uid = userCredential.user.uid;
-          return db.collection("users").doc(uid).set({
-            name: name,
-            username: username,
-            email: email,
-            phone: phone
-          });
-        })
-        .then(() => {
-          alert("Account created successfully!");
-          window.location.href = "login.html";
-        })
-        .catch(error => {
-          alert("Error: " + error.message);
+    auth.createUserWithEmailAndPassword(email, password)
+      .then(userCredential => {
+        const uid = userCredential.user.uid;
+        console.log("User created:", uid);
+
+        return db.collection("users").doc(uid).set({
+          name: name,
+          username: username,
+          email: email,
+          phone: phone
         });
-    }
-  </script>
+      })
+      .then(() => {
+        alert("Account created successfully!");
+        window.location.href = "login.html";
+      })
+      .catch(error => {
+        console.error("Signup error:", error);
+        alert("Signup failed: " + error.message);
+      });
+  }
+</script>
+
 </body>
 </html>
