@@ -23,6 +23,28 @@
       max-width: 300px;
     }
 
+    .input-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 80%;
+      max-width: 300px;
+    }
+
+    #password {
+      width: 100%;
+      padding-right: 40px;
+    }
+
+    .eye-icon {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #ccc;
+      font-size: 18px;
+    }
+
     button {
       background: #00cc99;
       color: white;
@@ -48,31 +70,24 @@
     .hidden {
       display: none;
     }
-
-    .toggle-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      margin-top: -5px;
-      font-size: 14px;
-    }
   </style>
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+
+  <!-- Font Awesome for eye icon -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
   <div class="container">
     <h2>Login</h2>
     <input type="email" id="email" placeholder="Email" /><br/>
-    <input type="password" id="password" placeholder="Password" /><br/>
 
-    <div class="toggle-container">
-      <input type="checkbox" id="togglePassword" onclick="togglePasswordVisibility()" />
-      <label for="togglePassword">Show Password</label>
-    </div>
+    <div class="input-wrapper">
+      <input type="password" id="password" placeholder="Password" />
+      <i class="fas fa-eye eye-icon" id="togglePassword" onclick="togglePasswordVisibility()"></i>
+    </div><br/>
 
     <button onclick="login()">Login</button>
 
@@ -110,9 +125,15 @@
       const password = document.getElementById("password").value;
 
       auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-          alert("Login successful!");
-          window.location.href = "index.html";
+        .then(userCredential => {
+          const user = userCredential.user;
+          if (user.emailVerified) {
+            alert("Login successful!");
+            window.location.href = "index.html";
+          } else {
+            auth.signOut();
+            alert("Please verify your email first. Check your inbox.");
+          }
         })
         .catch(error => {
           alert("Login Error: " + error.message);
@@ -121,7 +142,12 @@
 
     function togglePasswordVisibility() {
       const passwordInput = document.getElementById("password");
-      passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+      const toggleIcon = document.getElementById("togglePassword");
+
+      const isPassword = passwordInput.type === "password";
+      passwordInput.type = isPassword ? "text" : "password";
+      toggleIcon.classList.toggle("fa-eye");
+      toggleIcon.classList.toggle("fa-eye-slash");
     }
 
     function showReset() {
