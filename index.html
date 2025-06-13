@@ -2,69 +2,80 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Welcome Page</title>
+  <title>Main Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
       font-family: Arial, sans-serif;
       background: #111;
       color: white;
+      margin: 0;
       padding: 20px;
       text-align: center;
     }
 
-    .top-bar {
+    .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #222;
-      padding: 15px 20px;
-      border-radius: 10px;
-      margin-bottom: 30px;
+      padding: 10px 20px;
     }
 
-    .username {
-      font-weight: bold;
-      font-size: 18px;
-    }
-
-    .logout-button {
-      background-color: #ff4444;
-      color: white;
+    .header button {
+      background: #dc3545;
       border: none;
       padding: 10px 20px;
+      border-radius: 6px;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .withdraw-btn {
+      background-color: #ffc107;
+      color: black;
+      margin-left: 10px;
+    }
+
+    .main-welcome {
+      font-size: 3vw;
+      margin-top: 50px;
+    }
+
+    .info-box {
+      margin: 40px auto;
+      background: #222;
+      padding: 20px;
+      max-width: 500px;
+      border-radius: 10px;
+    }
+
+    .info-box p {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+
+    .info-box button {
+      background: #00cc99;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
       border-radius: 6px;
       cursor: pointer;
     }
 
-    .logout-button:hover {
-      background-color: #cc0000;
+    .referrals {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      text-align: left;
+      font-size: 14px;
     }
 
-    .stats {
-      background: #222;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 30px;
-    }
-
-    .stats p {
-      font-size: 20px;
-      margin: 10px 0;
-    }
-
-    .watch-button {
-      background: #00cc99;
-      color: white;
-      padding: 15px 25px;
-      border: none;
-      font-size: 18px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .watch-button:hover {
-      background: #00997a;
+    .invite-link {
+      margin-top: 30px;
+      font-size: 14px;
+      word-break: break-all;
     }
   </style>
 
@@ -74,27 +85,38 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
 </head>
 <body>
-  <div class="top-bar">
-    <div class="username" id="usernameDisplay">Welcome, User</div>
-    <button class="logout-button" onclick="logout()">Logout</button>
+
+  <div class="header">
+    <div id="usernameDisplay" style="font-size: 1.2em;"></div>
+    <div>
+      <button onclick="logout()">Logout</button>
+      <button class="withdraw-btn" onclick="withdraw()">Withdraw</button>
+    </div>
   </div>
 
-  <div class="stats">
-    <p>Videos Watched: <span id="videosWatched">0</span></p>
+  <div class="main-welcome" id="welcomeMsg"></div>
+
+  <div class="info-box">
+    <p>Videos Watched: <span id="videoCount">0</span></p>
     <p>Balance: $<span id="balance">0.00</span></p>
+    <button onclick="window.location.href='videos.html'">Watch more videos and get more money</button>
   </div>
 
-  <button class="watch-button" onclick="location.href='videos.html'">
-    Watch more videos and get more money
-  </button>
+  <div class="invite-link">
+    Your invitation link: <span id="inviteLink">Loading...</span>
+  </div>
+
+  <div class="referrals">
+    <p>Total Referrals: <span id="totalReferrals">0</span></p>
+    <p>Active Referrals: <span id="activeReferrals">0</span></p>
+  </div>
 
   <script>
-    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyCOu3t1rOBOnQJb4RTggIk8iF4BkmVitsE",
       authDomain: "paidvideos-9e929.firebaseapp.com",
-      projectId: "paidvideos-9e929",
       databaseURL: "https://paidvideos-9e929-default-rtdb.firebaseio.com",
+      projectId: "paidvideos-9e929",
       storageBucket: "paidvideos-9e929.appspot.com",
       messagingSenderId: "319365089060",
       appId: "1:319365089060:web:74cef70497a499ab9615b1"
@@ -105,27 +127,48 @@
     const db = firebase.database();
 
     auth.onAuthStateChanged(user => {
-      if (user) {
-        const uid = user.uid;
-        db.ref("users/" + uid).once("value").then(snapshot => {
-          const data = snapshot.val();
-          const username = data?.username || "User";
-          const watched = data?.videosWatched || 0;
-          const balance = data?.balance || 0;
-
-          document.getElementById("usernameDisplay").textContent = "Welcome, " + username;
-          document.getElementById("videosWatched").textContent = watched;
-          document.getElementById("balance").textContent = balance.toFixed(2);
-        });
-      } else {
+      if (!user) {
         window.location.href = "login.html";
+        return;
       }
+
+      const uid = user.uid;
+      const userRef = db.ref("users/" + uid);
+
+      userRef.once("value").then(snapshot => {
+        const data = snapshot.val();
+        const username = data.username || "User";
+        const isNewUser = data.isNewUser || false;
+
+        document.getElementById("usernameDisplay").innerText = username;
+        document.getElementById("welcomeMsg").innerText = isNewUser
+          ? `Welcome, ${username}`
+          : `Welcome back, ${username}`;
+
+        document.getElementById("videoCount").innerText = data.videosWatched || 0;
+        document.getElementById("balance").innerText = (data.balance || 0).toFixed(2);
+
+        document.getElementById("inviteLink").innerText =
+          `${window.location.origin}/signup.html?ref=${encodeURIComponent(username)}`;
+
+        document.getElementById("totalReferrals").innerText = data.totalReferrals || 0;
+        document.getElementById("activeReferrals").innerText = data.activeReferrals || 0;
+
+        // Mark user as no longer new
+        if (isNewUser) {
+          userRef.update({ isNewUser: false });
+        }
+      });
     });
 
     function logout() {
       auth.signOut().then(() => {
         window.location.href = "login.html";
       });
+    }
+
+    function withdraw() {
+      window.location.href = "withdraw.html";
     }
   </script>
 </body>
