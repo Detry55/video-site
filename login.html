@@ -40,7 +40,12 @@
       padding: 30px;
       border-radius: 10px;
     }
+
+    .link {
+      margin-top: 20px;
+    }
   </style>
+
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
@@ -52,19 +57,22 @@
     <input type="password" id="password" placeholder="Password" /><br/>
     <button onclick="login()">Login</button>
     <button onclick="signup()">Sign Up</button>
+    <div class="link">
+      <p>Don’t have an account? <a href="signup.html" style="color: #00ccff;">Sign up here</a></p>
+    </div>
   </div>
 
   <script>
     // Your Firebase config
-      const firebaseConfig = {
-        apiKey: "AIzaSyCOu3t1rOBOnQJb4RTggIk8iF4BkmVitsE",
-        authDomain: "paidvideos-9e929.firebaseapp.com",
-        projectId: "paidvideos-9e929",
-        storageBucket: "paidvideos-9e929.firebasestorage.app",
-        messagingSenderId: "319365089060",
-        appId: "1:319365089060:web:74cef70497a499ab9615b1",
-        measurementId: "G-HFYKHT5VM1"
-   };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCOu3t1rOBOnQJb4RTggIk8iF4BkmVitsE",
+      authDomain: "paidvideos-9e929.firebaseapp.com",
+      projectId: "paidvideos-9e929",
+      storageBucket: "paidvideos-9e929.firebasestorage.app",
+      messagingSenderId: "319365089060",
+      appId: "1:319365089060:web:74cef70497a499ab9615b1",
+      measurementId: "G-HFYKHT5VM1"
+    };
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
@@ -72,8 +80,10 @@
     function login() {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
+
       auth.signInWithEmailAndPassword(email, password)
         .then(() => {
+          alert("Login successful!");
           window.location.href = "index.html"; // redirect to video page
         })
         .catch((error) => {
@@ -84,6 +94,7 @@
     function signup() {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
+
       auth.createUserWithEmailAndPassword(email, password)
         .then(() => {
           alert("Account created! You can log in now.");
@@ -92,8 +103,6 @@
           alert("Sign Up Error: " + error.message);
         });
     }
-    <p>Don't have an account? <a href="signup.html" style="color: #00ccff;">Sign up here</a></p>
-    }
   </script>
 </body>
-</htm
+</html>
