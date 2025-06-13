@@ -1,127 +1,132 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Video Platform</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <meta charset="UTF-8">
+  <title>Welcome Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
-      background-color: #111;
-      color: #fff;
-    }
-
-    header {
-      background-color: #222;
+      background: #111;
+      color: white;
       padding: 20px;
       text-align: center;
     }
 
-    header h1 {
-      margin: 0;
-      color: #00ffcc;
-      font-size: 28px;
-    }
-
-    .hero {
-      text-align: center;
-      padding: 30px;
-    }
-
-    .hero iframe {
-      width: 90%;
-      max-width: 800px;
-      height: 450px;
-      border: none;
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #222;
+      padding: 15px 20px;
       border-radius: 10px;
+      margin-bottom: 30px;
     }
 
-    .video-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-      padding: 30px;
+    .username {
+      font-weight: bold;
+      font-size: 18px;
     }
 
-    .video-grid iframe {
-      width: 100%;
-      height: 200px;
+    .logout-button {
+      background-color: #ff4444;
+      color: white;
       border: none;
-      border-radius: 10px;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
     }
 
-    footer {
-      background-color: #222;
-      text-align: center;
+    .logout-button:hover {
+      background-color: #cc0000;
+    }
+
+    .stats {
+      background: #222;
       padding: 20px;
-      font-size: 14px;
-      color: #aaa;
+      border-radius: 10px;
+      margin-bottom: 30px;
     }
 
-    @media (max-width: 600px) {
-      .hero iframe {
-        height: 200px;
-      }
-      .video-grid iframe {
-        height: 160px;
-      }
+    .stats p {
+      font-size: 20px;
+      margin: 10px 0;
+    }
+
+    .watch-button {
+      background: #00cc99;
+      color: white;
+      padding: 15px 25px;
+      border: none;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .watch-button:hover {
+      background: #00997a;
     }
   </style>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
 </head>
 <body>
-  <header>
-    <h1>My Video Platform</h1>
-    <button onclick="logout()">Logout</button>
-
-  </header>
-
-  <div class="hero">
-    <h2>Featured Video</h2>
-    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+  <div class="top-bar">
+    <div class="username" id="usernameDisplay">Welcome, User</div>
+    <button class="logout-button" onclick="logout()">Logout</button>
   </div>
 
-  <section class="video-grid">
-    <iframe src="https://www.youtube.com/embed/3tmd-ClpJxA" allowfullscreen></iframe>
-    <iframe src="https://www.youtube.com/embed/kXYiU_JCYtU" allowfullscreen></iframe>
-    <iframe src="https://www.youtube.com/embed/ScNNfyq3d_w" allowfullscreen></iframe>
-    <iframe src="https://www.youtube.com/embed/E7wJTI-1dvQ" allowfullscreen></iframe>
-  </section>
+  <div class="stats">
+    <p>Videos Watched: <span id="videosWatched">0</span></p>
+    <p>Balance: $<span id="balance">0.00</span></p>
+  </div>
 
-  <footer>
-    &copy; 2025 My Video Platform. All rights reserved.
-  </footer>
-  <!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <button class="watch-button" onclick="location.href='videos.html'">
+    Watch more videos and get more money
+  </button>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCOu3t1rOBOnQJb4RTggIk8iF4BkmVitsE",
-    authDomain: "paidvideos-9e929.firebaseapp.com",
-    projectId: "paidvideos-9e929",
-    storageBucket: "paidvideos-9e929.firebasestorage.app",
-    messagingSenderId: "319365089060",
-    appId: "1:319365089060:web:74cef70497a499ab9615b1",
-    measurementId: "G-HFYKHT5VM1"
-  };
+  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCOu3t1rOBOnQJb4RTggIk8iF4BkmVitsE",
+      authDomain: "paidvideos-9e929.firebaseapp.com",
+      projectId: "paidvideos-9e929",
+      databaseURL: "https://paidvideos-9e929-default-rtdb.firebaseio.com",
+      storageBucket: "paidvideos-9e929.appspot.com",
+      messagingSenderId: "319365089060",
+      appId: "1:319365089060:web:74cef70497a499ab9615b1"
+    };
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
 
-  auth.onAuthStateChanged(user => {
-    if (!user) {
-      window.location.href = "login.html";
-    }
-  });
-</script>
-  function logout() {
-    auth.signOut().then(() => {
-      window.location.href = "login.html";
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        const uid = user.uid;
+        db.ref("users/" + uid).once("value").then(snapshot => {
+          const data = snapshot.val();
+          const username = data?.username || "User";
+          const watched = data?.videosWatched || 0;
+          const balance = data?.balance || 0;
+
+          document.getElementById("usernameDisplay").textContent = "Welcome, " + username;
+          document.getElementById("videosWatched").textContent = watched;
+          document.getElementById("balance").textContent = balance.toFixed(2);
+        });
+      } else {
+        window.location.href = "login.html";
+      }
     });
-  }
-</script>
 
+    function logout() {
+      auth.signOut().then(() => {
+        window.location.href = "login.html";
+      });
+    }
+  </script>
 </body>
 </html>
