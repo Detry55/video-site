@@ -40,6 +40,15 @@
       padding: 30px;
       border-radius: 10px;
     }
+
+    #resetForm {
+      display: none;
+    }
+
+    #error {
+      color: red;
+      margin-top: 20px;
+    }
   </style>
 
   <!-- Firebase SDKs -->
@@ -49,9 +58,14 @@
 <body>
   <div class="container">
     <h2>Set New Password</h2>
-    <input type="password" id="newPassword" placeholder="New Password" /><br/>
-    <input type="password" id="confirmPassword" placeholder="Confirm Password" /><br/>
-    <button onclick="confirmReset()">Update Password</button>
+
+    <div id="resetForm">
+      <input type="password" id="newPassword" placeholder="New Password" /><br/>
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" /><br/>
+      <button onclick="confirmReset()">Update Password</button>
+    </div>
+
+    <div id="error"></div>
   </div>
 
   <script>
@@ -66,13 +80,24 @@
     };
 
     firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
-    function getQueryParam(param) {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(param);
+    const actionCode = new URLSearchParams(window.location.search).get("oobCode");
+    const resetForm = document.getElementById("resetForm");
+    const errorDiv = document.getElementById("error");
+
+    if (!actionCode) {
+      errorDiv.textContent = "Invalid or missing reset code in URL.";
+    } else {
+      // Verify reset code is valid before showing the form
+      auth.verifyPasswordResetCode(actionCode)
+        .then(() => {
+          resetForm.style.display = "block";
+        })
+        .catch((error) => {
+          errorDiv.textContent = "Invalid or expired password reset link.";
+        });
     }
-
-    const actionCode = getQueryParam("oobCode");
 
     function confirmReset() {
       const newPassword = document.getElementById("newPassword").value;
@@ -88,7 +113,7 @@
         return;
       }
 
-      firebase.auth().confirmPasswordReset(actionCode, newPassword)
+      auth.confirmPasswordReset(actionCode, newPassword)
         .then(() => {
           alert("Password has been reset successfully!");
           window.location.href = "login.html";
