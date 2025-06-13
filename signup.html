@@ -47,9 +47,9 @@
   </style>
 
   <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
 <body>
   <div class="container">
@@ -70,54 +70,46 @@
     const firebaseConfig = {
       apiKey: "AIzaSyCOu3t1rOBOnQJb4RTggIk8iF4BkmVitsE",
       authDomain: "paidvideos-9e929.firebaseapp.com",
-      databaseURL: "https://paidvideos-9e929-default-rtdb.firebaseio.com",
       projectId: "paidvideos-9e929",
-      storageBucket: "paidvideos-9e929.appspot.com",
+      storageBucket: "paidvideos-9e929.firebasestorage.app",
       messagingSenderId: "319365089060",
-      appId: "1:319365089060:web:74cef70497a499ab9615b1"
+      appId: "1:319365089060:web:74cef70497a499ab9615b1",
+      measurementId: "G-HFYKHT5VM1"
     };
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-    const db = firebase.database();
+    const db = firebase.firestore();
 
     function signup() {
-      const name = document.getElementById('name').value.trim();
-      const username = document.getElementById('username').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const phone = document.getElementById('phone').value.trim();
+      const name = document.getElementById('name').value;
+      const username = document.getElementById('username').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
       const password = document.getElementById('password').value;
-
-      if (!name || !username || !email || !phone || !password) {
-        alert("Please fill in all fields.");
-        return;
-      }
 
       auth.createUserWithEmailAndPassword(email, password)
         .then(userCredential => {
-          const uid = userCredential.user.uid;
+          const user = userCredential.user;
 
-          return db.ref('users/' + uid).set({
-            name: name,
-            username: username,
-            email: email,
-            phone: phone,
-            videosWatched: 0,
-            balance: 0,
-            referrals: [],
-            activeReferrals: []
+          // Send email verification
+          return user.sendEmailVerification().then(() => {
+            alert("Verification email sent! Please check your inbox.");
+
+            const uid = user.uid;
+            return db.collection("users").doc(uid).set({
+              name: name,
+              username: username,
+              email: email,
+              phone: phone
+            }).then(() => {
+              auth.signOut(); // sign user out until they verify
+              window.location.href = "login.html";
+            });
           });
         })
-        .then(() => {
-          alert("Account created successfully!");
-          window.location.href = "login.html";
-        })
         .catch(error => {
-          if (error.code === 'auth/email-already-in-use') {
-            alert("Email already used. Please login instead or try a different email.");
-          } else {
-            alert("Signup failed: " + error.message);
-          }
+          alert("Signup failed: " + error.message);
         });
     }
   </script>
