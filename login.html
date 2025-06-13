@@ -48,6 +48,15 @@
     .hidden {
       display: none;
     }
+
+    .toggle-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: -5px;
+      font-size: 14px;
+    }
   </style>
 
   <!-- Firebase SDKs -->
@@ -59,6 +68,12 @@
     <h2>Login</h2>
     <input type="email" id="email" placeholder="Email" /><br/>
     <input type="password" id="password" placeholder="Password" /><br/>
+
+    <div class="toggle-container">
+      <input type="checkbox" id="togglePassword" onclick="togglePasswordVisibility()" />
+      <label for="togglePassword">Show Password</label>
+    </div>
+
     <button onclick="login()">Login</button>
 
     <div class="link">
@@ -102,6 +117,11 @@
         .catch(error => {
           alert("Login Error: " + error.message);
         });
+    }
+
+    function togglePasswordVisibility() {
+      const passwordInput = document.getElementById("password");
+      passwordInput.type = passwordInput.type === "password" ? "text" : "password";
     }
 
     function showReset() {
