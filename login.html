@@ -56,14 +56,13 @@
 </head>
 <body>
   <div class="container">
-    <h2>Login or Sign Up</h2>
+    <h2>Login</h2>
     <input type="email" id="email" placeholder="Email" /><br/>
     <input type="password" id="password" placeholder="Password" /><br/>
     <button onclick="login()">Login</button>
-    <button onclick="signup()">Sign Up</button>
-    
+
     <div class="link">
-      <p>Don’t have an account? <a href="signup.html" style="color: #00ccff;">Sign up here</a></p>
+      <p>Don't have an account? <a href="signup.html" style="color: #00ccff;">Sign up here</a></p>
     </div>
 
     <div class="reset">
@@ -96,25 +95,19 @@
       const password = document.getElementById("password").value;
 
       auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-          alert("Login successful!");
-          window.location.href = "index.html";
+        .then(userCredential => {
+          const user = userCredential.user;
+
+          if (user.emailVerified) {
+            alert("Login successful!");
+            window.location.href = "index.html";
+          } else {
+            auth.signOut();
+            alert("Please verify your email first. Check your inbox.");
+          }
         })
-        .catch((error) => {
+        .catch(error => {
           alert("Login Error: " + error.message);
-        });
-    }
-
-    function signup() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(() => {
-          alert("Account created! You can log in now.");
-        })
-        .catch((error) => {
-          alert("Sign Up Error: " + error.message);
         });
     }
 
@@ -130,11 +123,10 @@
           if (methods.length === 0) {
             alert("No account found with that email.");
           } else {
-            return auth.sendPasswordResetEmail(resetEmail);
+            return auth.sendPasswordResetEmail(resetEmail).then(() => {
+              alert("Password reset email sent. Check your inbox.");
+            });
           }
-        })
-        .then(() => {
-          alert("Reset email sent! Check your inbox.");
         })
         .catch(error => {
           alert("Reset Error: " + error.message);
