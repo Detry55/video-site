@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Reset Password</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+      text-align: center;
+      padding: 50px;
+    }
+
+    input, button {
+      padding: 12px;
+      margin: 10px;
+      border-radius: 6px;
+      border: none;
+      font-size: 16px;
+      width: 80%;
+      max-width: 300px;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: #222;
+      padding: 30px;
+      border-radius: 10px;
+    }
+  </style>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h2>Set New Password</h2>
+    <input type="password" id="newPassword" placeholder="New Password" /><br/>
+    <input type="password" id="confirmPassword" placeholder="Confirm Password" /><br/>
+    <button onclick="confirmReset()">Update Password</button>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCOu3t1rOBOnQJb4RTggIk8iF4BkmVitsE",
+      authDomain: "paidvideos-9e929.firebaseapp.com",
+      projectId: "paidvideos-9e929",
+      storageBucket: "paidvideos-9e929.firebasestorage.app",
+      messagingSenderId: "319365089060",
+      appId: "1:319365089060:web:74cef70497a499ab9615b1",
+      measurementId: "G-HFYKHT5VM1"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    const actionCode = getQueryParam("oobCode");
+
+    function confirmReset() {
+      const newPassword = document.getElementById("newPassword").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+
+      if (!newPassword || !confirmPassword) {
+        alert("Please fill in both fields.");
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+      }
+
+      firebase.auth().confirmPasswordReset(actionCode, newPassword)
+        .then(() => {
+          alert("Password has been reset successfully!");
+          window.location.href = "login.html";
+        })
+        .catch((error) => {
+          alert("Error: " + error.message);
+        });
+    }
+  </script>
+</body>
+</html>
