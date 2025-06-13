@@ -17,11 +17,21 @@
     .header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       padding: 10px 20px;
     }
 
-    .header button {
+    .referral-stats {
+      text-align: right;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .header-buttons {
+      margin-top: 5px;
+    }
+
+    .header-buttons button {
       background: #dc3545;
       border: none;
       padding: 10px 20px;
@@ -39,11 +49,11 @@
 
     .main-welcome {
       font-size: 3vw;
-      margin-top: 50px;
+      margin-top: 40px;
     }
 
     .info-box {
-      margin: 40px auto;
+      margin: 30px auto;
       background: #222;
       padding: 20px;
       max-width: 500px;
@@ -64,18 +74,47 @@
       cursor: pointer;
     }
 
-    .referrals {
-      position: absolute;
-      bottom: 10px;
-      left: 10px;
-      text-align: left;
-      font-size: 14px;
-    }
-
     .invite-link {
       margin-top: 30px;
       font-size: 14px;
-      word-break: break-all;
+      word-break: break-word;
+      max-width: 90%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .invite-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .invite-text {
+      background: #222;
+      padding: 8px;
+      border-radius: 6px 0 0 6px;
+      color: #00ccff;
+      border-right: none;
+      font-size: 14px;
+      width: 70%;
+      overflow-x: auto;
+    }
+
+    .copy-btn {
+      background: #00ccff;
+      color: black;
+      padding: 8px 12px;
+      border-radius: 0 6px 6px 0;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .share-note {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #ccc;
     }
   </style>
 
@@ -87,8 +126,11 @@
 <body>
 
   <div class="header">
-    <div id="usernameDisplay" style="font-size: 1.2em;"></div>
-    <div>
+    <div class="referral-stats">
+      <p>Total Referrals: <span id="totalReferrals">0</span></p>
+      <p>Active Referrals: <span id="activeReferrals">0</span></p>
+    </div>
+    <div class="header-buttons">
       <button onclick="logout()">Logout</button>
       <button class="withdraw-btn" onclick="withdraw()">Withdraw</button>
     </div>
@@ -103,12 +145,13 @@
   </div>
 
   <div class="invite-link">
-    Your invitation link: <span id="inviteLink">Loading...</span>
-  </div>
-
-  <div class="referrals">
-    <p>Total Referrals: <span id="totalReferrals">0</span></p>
-    <p>Active Referrals: <span id="activeReferrals">0</span></p>
+    <div class="invite-container">
+      <div id="inviteLink" class="invite-text">Loading...</div>
+      <button class="copy-btn" onclick="copyInviteLink()">Copy</button>
+    </div>
+    <div class="share-note">
+      Share your link to earn more money when users sign up.
+    </div>
   </div>
 
   <script>
@@ -140,19 +183,17 @@
         const username = data.username || "User";
         const isNewUser = data.isNewUser || false;
 
-        document.getElementById("usernameDisplay").innerText = username;
         document.getElementById("welcomeMsg").innerText = isNewUser
           ? `Welcome, ${username}`
           : `Welcome back, ${username}`;
 
         document.getElementById("videoCount").innerText = data.videosWatched || 0;
         document.getElementById("balance").innerText = (data.balance || 0).toFixed(2);
-
-        document.getElementById("inviteLink").innerText =
-          `${window.location.origin}/signup.html?ref=${encodeURIComponent(username)}`;
-
         document.getElementById("totalReferrals").innerText = data.totalReferrals || 0;
         document.getElementById("activeReferrals").innerText = data.activeReferrals || 0;
+
+        const inviteUrl = `${window.location.origin}/signup.html?ref=${encodeURIComponent(username)}`;
+        document.getElementById("inviteLink").innerText = inviteUrl;
 
         // Mark user as no longer new
         if (isNewUser) {
@@ -169,6 +210,13 @@
 
     function withdraw() {
       window.location.href = "withdraw.html";
+    }
+
+    function copyInviteLink() {
+      const linkText = document.getElementById("inviteLink").innerText;
+      navigator.clipboard.writeText(linkText).then(() => {
+        alert("Invitation link copied to clipboard!");
+      });
     }
   </script>
 </body>
