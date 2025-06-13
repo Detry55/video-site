@@ -2,167 +2,172 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Main Dashboard</title>
+  <title>Welcome Page</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
+      background-color: #111;
+      color: #fff;
       font-family: Arial, sans-serif;
-      background: #111;
-      color: white;
-      margin: 0;
       padding: 20px;
-      text-align: center;
+      margin: 0;
     }
 
     .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      padding: 10px 20px;
+      text-align: center;
+      margin-bottom: 30px;
     }
 
-    .referral-stats {
-      text-align: right;
-      font-size: 14px;
-      line-height: 1.4;
+    .welcome {
+      font-size: 8vw;
+      font-weight: bold;
     }
 
-    .header-buttons {
+    .username {
+      font-size: 6vw;
       margin-top: 5px;
+      color: #00ccff;
     }
 
-    .header-buttons button {
-      background: #dc3545;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
+    .actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .actions button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #00cc99;
       color: white;
-      font-size: 14px;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
     }
 
-    .withdraw-btn {
-      background-color: #ffc107;
-      color: black;
-      margin-left: 10px;
+    .actions button:hover {
+      background-color: #00997a;
     }
 
-    .main-welcome {
-      font-size: 3vw;
-      margin-top: 40px;
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      margin: 30px 0 20px;
     }
 
-    .info-box {
-      margin: 30px auto;
-      background: #222;
-      padding: 20px;
-      max-width: 500px;
+    .stat-box {
+      background-color: #222;
+      padding: 15px;
       border-radius: 10px;
-    }
-
-    .info-box p {
-      font-size: 18px;
+      width: 45%;
+      min-width: 140px;
+      text-align: center;
       margin: 10px 0;
     }
 
-    .info-box button {
-      background: #00cc99;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .invite-link {
-      margin-top: 30px;
-      font-size: 14px;
-      word-break: break-word;
+    .invitation {
+      background-color: #222;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      margin: 20px auto;
       max-width: 90%;
-      margin-left: auto;
-      margin-right: auto;
     }
 
-    .invite-container {
+    .invitation-link {
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-top: 10px;
+      gap: 10px;
+      flex-wrap: wrap;
+      word-break: break-all;
     }
 
-    .invite-text {
-      background: #222;
-      padding: 8px;
-      border-radius: 6px 0 0 6px;
-      color: #00ccff;
-      border-right: none;
-      font-size: 14px;
-      width: 70%;
-      overflow-x: auto;
-    }
-
-    .copy-btn {
-      background: #00ccff;
-      color: black;
-      padding: 8px 12px;
-      border-radius: 0 6px 6px 0;
-      border: none;
+    .copy-icon {
       cursor: pointer;
-      font-size: 14px;
+      padding: 4px 8px;
+      background: #00ccff;
+      border-radius: 5px;
     }
 
-    .share-note {
+    .share-message {
       margin-top: 20px;
+      font-style: italic;
       font-size: 14px;
       color: #ccc;
     }
-  </style>
 
-  <!-- Firebase SDKs -->
+    @media (min-width: 768px) {
+      .welcome {
+        font-size: 3vw;
+      }
+
+      .username {
+        font-size: 2.5vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="welcome" id="welcomeMessage">Welcome Back</div>
+    <div class="username" id="usernameDisplay">@Username</div>
+  </div>
+
+  <div class="actions">
+    <button onclick="logout()">Logout</button>
+    <button onclick="goToWithdraw()">Withdraw</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat-box">
+      <div>Videos Watched</div>
+      <div id="videosWatched">0</div>
+    </div>
+    <div class="stat-box">
+      <div>Balance ($)</div>
+      <div id="balance">$0.00</div>
+    </div>
+    <div class="stat-box">
+      <div>Total Referrals</div>
+      <div id="totalReferrals">0</div>
+    </div>
+    <div class="stat-box">
+      <div>Active Referrals</div>
+      <div id="activeReferrals">0</div>
+    </div>
+  </div>
+
+  <div class="invitation">
+    <div><strong>Your Invitation Link:</strong></div>
+    <div class="invitation-link">
+      <span id="inviteLink">https://yourdomain.com/signup.html?ref=username</span>
+      <span class="copy-icon" onclick="copyLink()">📋 Copy</span>
+    </div>
+    <div class="share-message">Share this link to earn more money when others sign up!</div>
+  </div>
+
+  <div style="text-align:center; margin-top: 30px;">
+    <button onclick="window.location.href='videos.html'">🎥 Watch more videos and get more money</button>
+  </div>
+
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
-</head>
-<body>
-
-  <div class="header">
-    <div class="referral-stats">
-      <p>Total Referrals: <span id="totalReferrals">0</span></p>
-      <p>Active Referrals: <span id="activeReferrals">0</span></p>
-    </div>
-    <div class="header-buttons">
-      <button onclick="logout()">Logout</button>
-      <button class="withdraw-btn" onclick="withdraw()">Withdraw</button>
-    </div>
-  </div>
-
-  <div class="main-welcome" id="welcomeMsg"></div>
-
-  <div class="info-box">
-    <p>Videos Watched: <span id="videoCount">0</span></p>
-    <p>Balance: $<span id="balance">0.00</span></p>
-    <button onclick="window.location.href='videos.html'">Watch more videos and get more money</button>
-  </div>
-
-  <div class="invite-link">
-    <div class="invite-container">
-      <div id="inviteLink" class="invite-text">Loading...</div>
-      <button class="copy-btn" onclick="copyInviteLink()">Copy</button>
-    </div>
-    <div class="share-note">
-      Share your link to earn more money when users sign up.
-    </div>
-  </div>
 
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCOu3t1rOBOnQJb4RTggIk8iF4BkmVitsE",
       authDomain: "paidvideos-9e929.firebaseapp.com",
-      databaseURL: "https://paidvideos-9e929-default-rtdb.firebaseio.com",
       projectId: "paidvideos-9e929",
+      databaseURL: "https://paidvideos-9e929-default-rtdb.firebaseio.com",
       storageBucket: "paidvideos-9e929.appspot.com",
       messagingSenderId: "319365089060",
-      appId: "1:319365089060:web:74cef70497a499ab9615b1"
+      appId: "1:319365089060:web:74cef70497a499ab9615b1",
+      measurementId: "G-HFYKHT5VM1"
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -170,36 +175,23 @@
     const db = firebase.database();
 
     auth.onAuthStateChanged(user => {
-      if (!user) {
+      if (user) {
+        const uid = user.uid;
+        db.ref("users/" + uid).once("value").then(snapshot => {
+          const data = snapshot.val();
+          document.getElementById("usernameDisplay").textContent = "@" + data.username;
+          document.getElementById("videosWatched").textContent = data.videosWatched || 0;
+          document.getElementById("balance").textContent = `$${data.balance?.toFixed(2) || '0.00'}`;
+          document.getElementById("totalReferrals").textContent = data.totalReferrals || 0;
+          document.getElementById("activeReferrals").textContent = data.activeReferrals || 0;
+
+          // Set invitation link
+          document.getElementById("inviteLink").textContent =
+            `https://yourdomain.com/signup.html?ref=${data.username}`;
+        });
+      } else {
         window.location.href = "login.html";
-        return;
       }
-
-      const uid = user.uid;
-      const userRef = db.ref("users/" + uid);
-
-      userRef.once("value").then(snapshot => {
-        const data = snapshot.val();
-        const username = data.username || "User";
-        const isNewUser = data.isNewUser || false;
-
-        document.getElementById("welcomeMsg").innerText = isNewUser
-          ? `Welcome, ${username}`
-          : `Welcome back, ${username}`;
-
-        document.getElementById("videoCount").innerText = data.videosWatched || 0;
-        document.getElementById("balance").innerText = (data.balance || 0).toFixed(2);
-        document.getElementById("totalReferrals").innerText = data.totalReferrals || 0;
-        document.getElementById("activeReferrals").innerText = data.activeReferrals || 0;
-
-        const inviteUrl = `${window.location.origin}/signup.html?ref=${encodeURIComponent(username)}`;
-        document.getElementById("inviteLink").innerText = inviteUrl;
-
-        // Mark user as no longer new
-        if (isNewUser) {
-          userRef.update({ isNewUser: false });
-        }
-      });
     });
 
     function logout() {
@@ -208,14 +200,14 @@
       });
     }
 
-    function withdraw() {
+    function goToWithdraw() {
       window.location.href = "withdraw.html";
     }
 
-    function copyInviteLink() {
-      const linkText = document.getElementById("inviteLink").innerText;
-      navigator.clipboard.writeText(linkText).then(() => {
-        alert("Invitation link copied to clipboard!");
+    function copyLink() {
+      const text = document.getElementById("inviteLink").textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Invitation link copied!");
       });
     }
   </script>
