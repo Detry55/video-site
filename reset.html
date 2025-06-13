@@ -49,6 +49,11 @@
       color: red;
       margin-top: 20px;
     }
+
+    #success {
+      color: #28a745;
+      margin-top: 20px;
+    }
   </style>
 
   <!-- Firebase SDKs -->
@@ -66,6 +71,7 @@
     </div>
 
     <div id="error"></div>
+    <div id="success"></div>
   </div>
 
   <script>
@@ -85,17 +91,17 @@
     const actionCode = new URLSearchParams(window.location.search).get("oobCode");
     const resetForm = document.getElementById("resetForm");
     const errorDiv = document.getElementById("error");
+    const successDiv = document.getElementById("success");
 
     if (!actionCode) {
-      errorDiv.textContent = "Invalid or missing reset code in URL.";
+      errorDiv.textContent = "Invalid or missing reset code in the URL.";
     } else {
-      // Verify reset code is valid before showing the form
       auth.verifyPasswordResetCode(actionCode)
         .then(() => {
           resetForm.style.display = "block";
         })
         .catch((error) => {
-          errorDiv.textContent = "Invalid or expired password reset link.";
+          errorDiv.textContent = "This password reset link is invalid or has expired.";
         });
     }
 
@@ -104,22 +110,24 @@
       const confirmPassword = document.getElementById("confirmPassword").value;
 
       if (!newPassword || !confirmPassword) {
-        alert("Please fill in both fields.");
+        errorDiv.textContent = "Please fill in both password fields.";
         return;
       }
 
       if (newPassword !== confirmPassword) {
-        alert("Passwords do not match.");
+        errorDiv.textContent = "Passwords do not match.";
         return;
       }
 
       auth.confirmPasswordReset(actionCode, newPassword)
         .then(() => {
-          alert("Password has been reset successfully!");
-          window.location.href = "login.html";
+          successDiv.textContent = "Your password has been successfully reset!";
+          setTimeout(() => {
+            window.location.href = "login.html";
+          }, 2500);
         })
         .catch((error) => {
-          alert("Error: " + error.message);
+          errorDiv.textContent = "Error resetting password: " + error.message;
         });
     }
   </script>
