@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Withdraw Funds</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .container {
+      background-color: #222;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 500px;
+      margin: auto;
+    }
+
+    input, select, button {
+      width: 90%;
+      max-width: 400px;
+      padding: 12px;
+      margin: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #00cc99;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #00997a;
+    }
+
+    .message {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h2>Withdraw Funds</h2>
+    <p>Your Balance: $<span id="balance">0</span></p>
+
+    <select id="method" onchange="updatePlaceholder()">
+      <option value="">Select Payment Method</option>
+      <option value="paypal">PayPal</option>
+      <option value="cashapp">Cash App</option>
+      <option value="chime">Chime</option>
+      <option value="zelle">Zelle</option>
+      <option value="mobilemoney">Mobile Money</option>
+      <option value="bank">Bank Transfer</option>
+      <option value="mpesa">M-Pesa</option>
+    </select>
+
+    <input type="number" id="amount" placeholder="Amount to withdraw (min $300, max $1000)" />
+    <input type="text" id="account" placeholder="Account / Phone / Email" />
+
+    <button onclick="submitWithdrawal()">Request Withdrawal</button>
+
+    <div class="message" id="message"></div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCOu3t1rOBOnQJb4RTggIk8iF4BkmVitsE",
+      authDomain: "paidvideos-9e929.firebaseapp.com",
+      databaseURL: "https://paidvideos-9e929-default-rtdb.firebaseio.com",
+      projectId: "paidvideos-9e929",
+      storageBucket: "paidvideos-9e929.appspot.com",
+      messagingSenderId: "319365089060",
+      appId: "1:319365089060:web:74cef70497a499ab9615b1"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    let currentUser = null;
+    let userBalance = 0;
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        currentUser = user;
+        db.ref("users/" + user.uid + "/balance").once("value")
+          .then(snapshot => {
+            userBalance = snapshot.val() || 0;
+            document.getElementById("balance").innerText = userBalance.toFixed(2);
+          });
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    function updatePlaceholder() {
+      const method = document.getElementById("method").value;
+      const account = document.getElementById("account");
+
+      const placeholders = {
+        paypal: "Enter PayPal email",
+        cashapp: "Enter Cash App tag or email",
+        chime: "Enter Chime email",
+        zelle: "Enter Zelle email",
+        mobilemoney: "Enter Mobile Money number",
+        bank: "Enter Bank Account Number",
+        mpesa: "Enter M-Pesa number"
+      };
+
+      account.placeholder = placeholders[method] || "Account / Phone / Email";
+    }
+
+    function submitWithdrawal() {
+      const amount = parseFloat(document.getElementById("amount").value);
+      const method = document.getElementById("method").value;
+      const account = document.getElementById("account").value.trim();
+      const message = document.getElementById("message");
+
+      message.textContent = "";
+
+      if (!amount || amount < 300 || amount > 1000) {
+        message.textContent = "Amount must be between $300 and $1000.";
+        return;
+      }
+
+      if (!method || !account) {
+        message.textContent = "Please select a payment method and enter account details.";
+        return;
+      }
+
+      if (amount > userBalance) {
+        message.textContent = "Insufficient balance for this withdrawal.";
+        return;
+      }
+
+      const withdrawal = {
+        userId: currentUser.uid,
+        amount,
+        method,
+        account,
+        status: "pending",
+        timestamp: Date.now()
+      };
+
+      db.ref("withdrawals").push(withdrawal)
+        .then(() => {
+          message.textContent = "Withdrawal request submitted. Status: Pending.";
+        })
+        .catch(error => {
+          message.textContent = "Error: " + error.message;
+        });
+    }
+  </script>
+</body>
+</html>
