@@ -14,14 +14,12 @@
       margin: 0;
       padding: 0;
     }
-
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 20px 30px;
     }
-
     .logout-btn {
       background-color: #e63946;
       color: white;
@@ -31,21 +29,17 @@
       cursor: pointer;
       font-size: 14px;
     }
-
     .logout-btn:hover {
       background-color: #c82333;
     }
-
     .main {
       text-align: center;
       padding: 30px 20px;
     }
-
     .main h1 {
       font-size: 2.4em;
       margin: 10px 0 5px;
     }
-
     .stats {
       display: flex;
       justify-content: center;
@@ -53,19 +47,16 @@
       margin: 20px 0;
       flex-wrap: wrap;
     }
-
     .stat-box {
       background-color: #1e242c;
       padding: 15px 20px;
       border-radius: 10px;
       min-width: 140px;
     }
-
     .stat-box span {
       font-size: 1.4em;
       font-weight: 600;
     }
-
     .invitation {
       margin: 40px auto 20px;
       background-color: #1e1e1e;
@@ -73,12 +64,10 @@
       border-radius: 12px;
       max-width: 90%;
     }
-
     .invitation p {
       font-size: 16px;
       margin-bottom: 10px;
     }
-
     .invite-link {
       display: flex;
       justify-content: center;
@@ -89,7 +78,6 @@
       word-break: break-all;
       position: relative;
     }
-
     .copy-btn {
       background-color: #555;
       color: white;
@@ -100,7 +88,6 @@
       cursor: pointer;
       font-size: 14px;
     }
-
     .withdraw-btn {
       margin: 30px auto;
       display: block;
@@ -112,38 +99,31 @@
       border-radius: 8px;
       cursor: pointer;
     }
-
     .withdraw-btn:hover {
       background-color: #01977b;
     }
-
     .footer-msg {
       margin-top: 20px;
       font-size: 14px;
       color: #ccc;
     }
-
     @media (max-width: 600px) {
       .header {
         flex-direction: row;
         justify-content: space-between;
         padding: 15px;
       }
-
       .main h1 {
         font-size: 1.8em;
       }
-
       .stats {
         flex-direction: column;
         gap: 20px;
         margin-top: 10px;
       }
-
       .invitation {
         margin: 30px 10px 10px;
       }
-
       .withdraw-btn {
         width: 100%;
         max-width: 300px;
@@ -182,13 +162,11 @@
       </div>
     </div>
 
-    <!-- ✅ Updated Withdraw Button -->
     <button class="withdraw-btn" onclick="window.location.href='withdraw.html'">Withdraw</button>
-
     <button class="withdraw-btn" onclick="window.location.href='videos.html'">
       Watch More Videos and Get More Money
     </button>
-    
+
     <div class="invitation">
       <p>Your Invitation Link:</p>
       <div class="invite-link">
@@ -202,55 +180,4 @@
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCOu3t1rOBOnQJb4RTggIk8iF4BkmVitsE",
-      authDomain: "paidvideos-9e929.firebaseapp.com",
-      databaseURL: "https://paidvideos-9e929-default-rtdb.firebaseio.com",
-      projectId: "paidvideos-9e929",
-      storageBucket: "paidvideos-9e929.appspot.com",
-      messagingSenderId: "319365089060",
-      appId: "1:319365089060:web:74cef70497a499ab9615b1"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-
-    function logout() {
-      auth.signOut().then(() => {
-        window.location.href = "login.html";
-      });
-    }
-
-    function copyLink() {
-      const linkText = document.getElementById("inviteLink").textContent;
-      navigator.clipboard.writeText(linkText).then(() => {
-        alert("Invitation link copied!");
-      });
-    }
-
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        const uid = user.uid;
-        db.ref('users/' + uid).once('value').then(snapshot => {
-          const data = snapshot.val();
-          const username = data.username || "User";
-          const videosWatched = data.videosWatched || 0;
-          const balance = data.balance || 0;
-          const referrals = data.referrals || [];
-          const active = data.activeReferrals || [];
-
-          document.getElementById("username").innerText = username;
-          document.getElementById("videosWatched").innerText = videosWatched;
-          document.getElementById("balance").innerText = balance.toFixed(2);
-          document.getElementById("totalReferrals").innerText = referrals.length;
-          document.getElementById("activeReferrals").innerText = active.length;
-
-          const inviteLink = `${window.location.origin}/signup.html?ref=${username}`;
-          document.getElementById("inviteLink").innerText = inviteLink;
-        });
-      } else {
-        window.location.href = "login.html";
-      }
-    });
-  </script>
-</body>
-</html>
+      authDomain
