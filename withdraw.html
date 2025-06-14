@@ -61,6 +61,20 @@
       margin-bottom: 20px;
       font-size: 1.2em;
     }
+
+    #historyTitle {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 1.2em;
+    }
+
+    .history-item {
+      background: #1e1e1e;
+      padding: 12px;
+      margin: 10px auto;
+      border-radius: 6px;
+      max-width: 500px;
+    }
   </style>
 
   <!-- Firebase SDKs -->
@@ -99,6 +113,9 @@
     <button type="submit">Request Withdrawal</button>
   </form>
 
+  <h3 id="historyTitle">Withdrawal History</h3>
+  <div id="historyContainer"></div>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCOu3t1rOBOnQJb4RTggIk8iF4BkmVitsE",
@@ -124,6 +141,7 @@
           const data = snapshot.val();
           currentBalance = parseFloat(data.balance || 0);
           document.getElementById("balance").innerText = currentBalance.toFixed(2);
+          loadWithdrawalHistory();
         });
       } else {
         window.location.href = "login.html";
@@ -186,6 +204,34 @@
 
       db.ref("withdrawals/" + currentUID).push(request).then(() => {
         alert("Withdrawal request submitted and will be processed within minutes.");
+        loadWithdrawalHistory();
+      });
+    }
+
+    function loadWithdrawalHistory() {
+      const container = document.getElementById("historyContainer");
+      container.innerHTML = "";
+
+      db.ref("withdrawals/" + currentUID).once("value").then(snapshot => {
+        if (!snapshot.exists()) {
+          container.innerHTML = "<p style='text-align:center;color:#aaa;'>No withdrawal history yet.</p>";
+          return;
+        }
+
+        snapshot.forEach(child => {
+          const data = child.val();
+          const date = new Date(data.timestamp);
+
+          const item = document.createElement("div");
+          item.className = "history-item";
+          item.innerHTML = `
+            <strong>Amount:</strong> $${data.amount}<br>
+            <strong>Status:</strong> ${data.status}<br>
+            <strong>Date:</strong> ${date.toLocaleDateString()}<br>
+            <strong>Time:</strong> ${date.toLocaleTimeString()}
+          `;
+          container.appendChild(item);
+        });
       });
     }
   </script>
